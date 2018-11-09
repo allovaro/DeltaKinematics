@@ -1,5 +1,6 @@
 from kinematicsinverse import Kinematics
 from detection import Detection
+from servocontrol import Servo
 import serial
 import time
 import argparse
@@ -78,5 +79,14 @@ import cv2
 #         ser.write(b'Hello')
 #ser.close()
 
-sd = Detection()
-sd.shape_center()
+# sd = Detection()
+# sd.shape_center()
+ki = Kinematics()
+svr = Servo()
+svr.connect_servo()
+ki.x0 = 0
+ki.y0 = 0
+ki.z0 = -550
+ki.delta_calc_inverse()
+svr.cmd(ki.theta1, ki.theta2, ki.theta3)
+

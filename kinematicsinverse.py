@@ -103,13 +103,15 @@ class Kinematics:
         self.theta1 = self.delta_calc_angle_yz(self.x0, self.y0, self.z0)
 
         if self.theta1 != 65535:
+            # rotate coords to +120 deg
             self.x0_rotated = self.x0 * self.cos120 + self.y0 * self.sin120
             self.y0_rotated = self.y0 * self.cos120 - self.x0 * self.sin120
-            self.theta2 = self.delta_calc_angle_yz(self.x0_rotated, self.y0_rotated, self.z0)  # rotate coords to +120 deg
+            self.theta2 = self.delta_calc_angle_yz(self.x0_rotated, self.y0_rotated, self.z0)
         if self.theta2 != 65535:
+            # rotate coords to -120 deg
             self.x0_rotated = self.x0*self.cos120 - self.y0*self.sin120
             self.y0_rotated = self.y0*self.cos120+self.x0*self.sin120
-            self.theta3 = self.delta_calc_angle_yz(self.x0_rotated, self.y0_rotated, self.z0)  # rotate coords to -120 deg
+            self.theta3 = self.delta_calc_angle_yz(self.x0_rotated, self.y0_rotated, self.z0)
         print('t1 =', self.theta1)
         print('t2 =', self.theta2)
         print('t1 =', self.theta3)

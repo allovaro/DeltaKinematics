@@ -1,4 +1,5 @@
 import serial
+import math
 
 
 class Servo:
@@ -22,9 +23,9 @@ class Servo:
         )
 
     def cmd(self, theta1, theta2, theta3):
-        buff = str(self.deg_to_usec(theta1)) + ':' +\
-               str(self.deg_to_usec(theta2)) + ':' +\
-               str(self.deg_to_usec(theta3)) + '\r\n'
+        buff = 's1;' + str(math.ceil(self.deg_to_usec(theta1))) + ':' + \
+               's2;' + str(math.ceil(self.deg_to_usec(theta2))) + ':' + \
+               's3;' + str(math.ceil(self.deg_to_usec(theta3))) + '\r\n'
         print(buff)
         self.port.write(buff.encode('ascii'))
         self.deg_to_usec(theta1)

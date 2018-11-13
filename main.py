@@ -8,15 +8,19 @@ svr = Servo()
 sd = Detection()
 ki = Kinematics()
 
-#sd.vision()
-sd.vision2()
-# svr.connect_servo()
+frame = sd.countours(sd.get_next_image())
+center = sd.detection_process(frame)
+svr.connect_servo()
 # svr.read()
 # ki.x0 = 250
 # ki.y0 = 250
 # ki.z0 = -450
-# ki.delta_calc_inverse()
-# svr.cmd(ki.theta1, ki.theta2, ki.theta3)
+ki.x0 = center[0]
+ki.y0 = center[1]
+ki.z0 = -443
+print(ki.x0, ki.y0)
+ki.delta_calc_inverse()
+svr.cmd(ki.theta1, ki.theta2, ki.theta3)
 
 
 # while True:

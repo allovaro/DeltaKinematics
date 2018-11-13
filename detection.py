@@ -7,7 +7,56 @@ import math
 class Detection:
 
     def __init__(self):
-        pass
+        # self.cap = cv2.VideoCapture(0)
+        self.img = cv2.imread('IMG.jpg')
+
+    def get_next_image(self):
+        #flag, img = self.cap.read()
+        img = cv2.imread('IMG.jpg')
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Конвертируем в серые тона
+        blurred = cv2.GaussianBlur(gray, (5, 5), 0)  # Применяем эффект размытия
+        thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY)[1]  # Делаем пороговое выделение
+        return thresh
+
+    def countours(self, thresh):
+        # Поиск контуров в подготовленном изображении
+        cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
+                                cv2.CHAIN_APPROX_SIMPLE)
+        cnts = cnts[0] if imutils.is_cv2() else cnts[1]
+        return cnts
+
+    def detection_process(self, countours):
+        # Перебираем все найденные контуры в цикле
+        for cnt in countours:
+            rect = cv2.minAreaRect(cnt)  # Пытаемся вписать прямоугольник
+            box = cv2.boxPoints(rect)  # Поиск четырех вершин прямоугольника
+            center = (int(rect[0][0]), int(rect[0][1]))
+            area = int(rect[1][0]*rect[1][1])  # вычисление площади
+            if 20000 < area < 25000:
+                # вычисление координат двух векторов, являющихся сторонам прямоугольника
+                edge1 = np.int0((box[1][0] - box[0][0], box[1][1] - box[0][1]))
+                edge2 = np.int0((box[2][0] - box[1][0], box[2][1] - box[1][1]))
+
+                # выясняем какой вектор больше
+                usedEdge = edge1
+                if cv2.norm(edge2) > cv2.norm(edge1):
+                    usedEdge = edge2
+                reference = (1, 0)  # горизонтальный вектор, задающий горизонт
+
+                # вычисляем угол между самой длинной стороной прямоугольника и горизонтом
+                angle = 180.0 / math.pi * math.acos(
+                    (reference[0] * usedEdge[0] + reference[1] * usedEdge[1]) / (cv2.norm(reference) * cv2.norm(usedEdge)))
+                color_yellow = (0, 255, 255)
+                cv2.circle(self.img, center, 5, color_yellow, 1)
+                cv2.putText(self.img, "%d" % int(angle), (center[0] + 20, center[1] - 20),
+                           cv2.FONT_HERSHEY_SIMPLEX, 1, color_yellow, 2)
+                #cv2.drawContours(img, [box], 0, (255, 0, 0), 2)  # рисуем прямоугольник
+
+        cv2.imshow('contours', self.img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        print(center)
+        return center
 
     def shape_detector(self, c):
         # initialize the shape name and approximate the contour
@@ -182,6 +231,7 @@ class Detection:
                         cv2.putText(img, "%d" % int(angle), (center[0] + 20, center[1] - 20), cv2.FONT_HERSHEY_SIMPLEX, 1,
                                    color_red, 2)
                 cv2.imshow('result', img)
+                cv2.imshow('hsv', hsv)
             except:
                 raise
             ch = cv2.waitKey(5)

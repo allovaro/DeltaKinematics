@@ -7,9 +7,12 @@ import time
 svr = Servo()
 sd = Detection()
 ki = Kinematics()
+frame = sd.countours2(sd.get_next_image())
 
-frame = sd.countours(sd.get_next_image())
-center = sd.detection_process(frame)
+while True:
+    frame = sd.countours2(sd.get_next_image())
+    center = sd.detection_process(frame)
+
 svr.connect_servo()
 # svr.read()
 # ki.x0 = 250

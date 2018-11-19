@@ -8,22 +8,42 @@ class Detection:
 
     def __init__(self):
         # self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture('VID_20181114_122925.mp4')
+        self.ret, self.img = self.cap.read()
         self.img = cv2.imread('IMG.jpg')
 
     def get_next_image(self):
-        #flag, img = self.cap.read()
-        img = cv2.imread('IMG.jpg')
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Конвертируем в серые тона
-        blurred = cv2.GaussianBlur(gray, (5, 5), 0)  # Применяем эффект размытия
-        thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY)[1]  # Делаем пороговое выделение
-        return thresh
+        flag, self.img = self.cap.read()
+        # img = cv2.imread('IMG.jpg')
 
-    def countours(self, thresh):
+
+        # if flag:
+        #     gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)  # Конвертируем в серые тона
+        #     blurred = cv2.GaussianBlur(gray, (5, 5), 0)  # Применяем эффект размытия
+        #     thresh = cv2.threshold(blurred, 135, 255, cv2.THRESH_BINARY)[1]  # Делаем пороговое выделение
+        #     cv2.imshow('thresh', thresh)
+        #
+        # else:
+        #     return 0
+
+        return 0
+
+    def countours1(self, thresh):
         # Поиск контуров в подготовленном изображении
         cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
                                 cv2.CHAIN_APPROX_SIMPLE)
         cnts = cnts[0] if imutils.is_cv2() else cnts[1]
         return cnts
+
+    def countours2(self, thresh):
+        # Поиск контуров в подготовленном изображении
+        hsv_min = np.array((0, 54, 5), np.uint8)
+        hsv_max = np.array((187, 255, 253), np.uint8)
+
+        hsv = cv2.cvtColor(self.img, cv2.COLOR_BGR2HSV)  # меняем цветовую модель с BGR на HSV
+        thresh = cv2.inRange(hsv, hsv_min, hsv_max)  # применяем цветовой фильтр
+        _, contours0, hierarchy = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        return contours0
 
     def detection_process(self, countours):
         # Перебираем все найденные контуры в цикле
@@ -32,11 +52,11 @@ class Detection:
             box = cv2.boxPoints(rect)  # Поиск четырех вершин прямоугольника
             center = (int(rect[0][0]), int(rect[0][1]))
             area = int(rect[1][0]*rect[1][1])  # вычисление площади
-            if 20000 < area < 25000:
+            if 180000 < area < 500000:
                 # вычисление координат двух векторов, являющихся сторонам прямоугольника
                 edge1 = np.int0((box[1][0] - box[0][0], box[1][1] - box[0][1]))
                 edge2 = np.int0((box[2][0] - box[1][0], box[2][1] - box[1][1]))
-
+                # print(center)
                 # выясняем какой вектор больше
                 usedEdge = edge1
                 if cv2.norm(edge2) > cv2.norm(edge1):
@@ -45,17 +65,24 @@ class Detection:
 
                 # вычисляем угол между самой длинной стороной прямоугольника и горизонтом
                 angle = 180.0 / math.pi * math.acos(
-                    (reference[0] * usedEdge[0] + reference[1] * usedEdge[1]) / (cv2.norm(reference) * cv2.norm(usedEdge)))
+                     (reference[0] * usedEdge[0] + reference[1] * usedEdge[1]) / (cv2.norm(reference) * cv2.norm(usedEdge)))
+                if angle > 90:
+                    angle1 = angle - 180
+                else:
+                    angle1 = angle
+                # print(angle1)
                 color_yellow = (0, 255, 255)
                 cv2.circle(self.img, center, 5, color_yellow, 1)
-                cv2.putText(self.img, "%d" % int(angle), (center[0] + 20, center[1] - 20),
-                           cv2.FONT_HERSHEY_SIMPLEX, 1, color_yellow, 2)
-                #cv2.drawContours(img, [box], 0, (255, 0, 0), 2)  # рисуем прямоугольник
+                cv2.putText(self.img, "%d" % int(angle1), (center[0] + 20, center[1] - 20),
+                           cv2.FONT_HERSHEY_SIMPLEX, 1, color_yellow, 1)
+                ctr = np.array(box).reshape((-1, 1, 2)).astype(np.int32)
+                cv2.drawContours(self.img, [ctr], 0, color_yellow)  # рисуем прямоугольник
 
         cv2.imshow('contours', self.img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        cv2.waitKey(33)
         print(center)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
         return center
 
     def shape_detector(self, c):
@@ -89,154 +116,3 @@ class Detection:
 
         # return the name of the shape
         return shape
-
-    def vision(self):
-        # load the image and resize it to a smaller factor so that
-        # the shapes can be approximated better
-        image = cv2.imread("IMG.jpg")
-        resized = imutils.resize(image, width=300)
-        ratio = image.shape[0] / float(resized.shape[0])
-
-        # convert the resized image to grayscale, blur it slightly,
-        # and threshold it
-        gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
-        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-        thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY)[1]
-
-        # find contours in the thresholded image and initialize the
-        # shape detector
-        cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
-                                cv2.CHAIN_APPROX_SIMPLE)
-        cnts = cnts[0] if imutils.is_cv2() else cnts[1]
-
-        # loop over the contours
-        for c in cnts:
-            # compute the center of the contour, then detect the name of the
-            # shape using only the contour
-            M = cv2.moments(c)
-            if M["m00"] != 0:
-                cX = int((M["m10"] / M["m00"]) * ratio)
-                cY = int((M["m01"] / M["m00"]) * ratio)
-            else:
-                cX = 0
-                cY = 0
-            shape = self.shape_detector(c)
-            if shape == "rectangle" or shape == "square":
-                # multiply the contour (x, y)-coordinates by the resize ratio,
-                # then draw the contours and the name of the shape on the image
-                c = c.astype("float")
-                c *= ratio
-                c = c.astype("int")
-                cv2.drawContours(image, [c], -1, (0, 255, 0), 2)
-                cv2.circle(image, (cX, cY), 7, (255, 255, 255), -1)
-                cv2.putText(image, shape, (cX, cY), cv2.FONT_HERSHEY_SIMPLEX,
-                            0.5, (255, 255, 255), 2)
-
-            # show the output image
-            cv2.imshow("Image", image)
-            cv2.waitKey(0)
-
-    def vision2(self):
-        # load the image and resize it to a smaller factor so that
-        # the shapes can be approximated better
-        image = cv2.imread("IMG.jpg")
-        resized = imutils.resize(image, width=300)
-        ratio = image.shape[0] / float(resized.shape[0])
-
-        hsv_min = np.array((0, 0, 255), np.uint8)
-        hsv_max = np.array((72, 51, 255), np.uint8)
-
-        # convert the resized image to grayscale, blur it slightly,
-        # and threshold it
-        gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
-        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-        thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY)[1]
-        _, contours0, hierarchy = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-        # find contours in the thresholded image and initialize the
-        # shape detector
-        cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
-                                cv2.CHAIN_APPROX_SIMPLE)
-        cnts = cnts[0] if imutils.is_cv2() else cnts[1]
-
-        color_blue = (255, 0, 0)
-        color_red = (0, 0, 128)
-        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        thresh = cv2.inRange(hsv, hsv_min, hsv_max)
-        # loop over the contours
-        for c in cnts:
-            rect = cv2.minAreaRect(c)
-            box = cv2.boxPoints(rect)
-            box = np.int0(box)
-            center = (int(rect[0][0]), int(rect[0][1]))
-            area = int(rect[1][0] * rect[1][1])
-
-            edge1 = np.int0((box[1][0] - box[0][0], box[1][1] - box[0][1]))
-            edge2 = np.int0((box[2][0] - box[1][0], box[2][1] - box[1][1]))
-
-            usedEdge = edge1
-            if cv2.norm(edge2) > cv2.norm(edge1):
-                usedEdge = edge2
-
-            reference = (1, 0)  # horizontal edge
-            angle = 180.0 / math.pi * math.acos(
-                (reference[0] * usedEdge[0] + reference[1] * usedEdge[1]) / (cv2.norm(reference) * cv2.norm(usedEdge)))
-
-            if area > 500:
-                cv2.drawContours(image, [box], 0, color_blue, 2)
-                cv2.circle(image, center, 5, color_red, 2)
-                cv2.putText(image, "%d" % int(angle), (center[0] + 20, center[1] - 20), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                           color_red, 2)
-        cv2.imshow('result', image)
-        cv2.waitKey(0)
-
-    def vision3(self):
-        cv2.namedWindow("result")
-        # cap = cv2.VideoCapture(0)
-
-        hsv_min = np.array((0, 0, 255), np.uint8)
-        hsv_max = np.array((72, 51, 255), np.uint8)
-
-        color_blue = (255, 0, 0)
-        color_red = (0, 0, 128)
-
-        while True:
-            img = cv2.imread("IMG.jpg")
-            img = cv2.flip(img, 1)
-            try:
-                hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-                thresh = cv2.inRange(hsv, hsv_min, hsv_max)
-                _, contours0, hierarchy = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-
-                for cnt in contours0:
-                    rect = cv2.minAreaRect(cnt)
-                    box = cv2.boxPoints(rect)
-                    box = np.int0(box)
-                    center = (int(rect[0][0]), int(rect[0][1]))
-                    area = int(rect[1][0] * rect[1][1])
-
-                    edge1 = np.int0((box[1][0] - box[0][0], box[1][1] - box[0][1]))
-                    edge2 = np.int0((box[2][0] - box[1][0], box[2][1] - box[1][1]))
-
-                    usedEdge = edge1
-                    if cv2.norm(edge2) > cv2.norm(edge1):
-                        usedEdge = edge2
-
-                    reference = (1, 0)  # horizontal edge
-                    angle = 180.0 / math.pi * math.acos((reference[0] * usedEdge[0] + reference[1] * usedEdge[1]) / (
-                                cv2.norm(reference) * cv2.norm(usedEdge)))
-
-                    if area > 500:
-                        cv2.drawContours(img, [box], 0, color_blue, 2)
-                        cv2.circle(img, center, 5, color_red, 2)
-                        cv2.putText(img, "%d" % int(angle), (center[0] + 20, center[1] - 20), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                                   color_red, 2)
-                cv2.imshow('result', img)
-                cv2.imshow('hsv', hsv)
-            except:
-                raise
-            ch = cv2.waitKey(5)
-            if ch == 27:
-                break
-
-        cap.release()
-        cv2.destroyAllWindows()

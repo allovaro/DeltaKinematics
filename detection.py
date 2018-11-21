@@ -65,7 +65,8 @@ class Detection:
 
                 # вычисляем угол между самой длинной стороной прямоугольника и горизонтом
                 angle = 180.0 / math.pi * math.acos(
-                     (reference[0] * usedEdge[0] + reference[1] * usedEdge[1]) / (cv2.norm(reference) * cv2.norm(usedEdge)))
+                     (reference[0] * usedEdge[0] + reference[1] * usedEdge[1]) / (cv2.norm(reference) *
+                                                                                  cv2.norm(usedEdge)))
                 if angle > 90:
                     angle1 = angle - 180
                 else:

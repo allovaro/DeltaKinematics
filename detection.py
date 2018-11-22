@@ -8,42 +8,33 @@ class Detection:
 
     def __init__(self):
         # self.cap = cv2.VideoCapture(0)
-        self.cap = cv2.VideoCapture('VID_20181114_122925.mp4')
+        self.cap = cv2.VideoCapture('VID_20181122_140714.mp4')
         self.ret, self.img = self.cap.read()
         self.img = cv2.imread('IMG.jpg')
 
-    def get_next_image(self):
+    def countours1(self):
         flag, self.img = self.cap.read()
-        # img = cv2.imread('IMG.jpg')
+        gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)  # Конвертируем в серые тона
+        blurred = cv2.GaussianBlur(gray, (5, 5), 0)  # Применяем эффект размытия
+        thresh = cv2.threshold(blurred, 105, 255, cv2.THRESH_BINARY)[1]  # Делаем пороговое выделение
+        # cv2.imshow('thresh', thresh)
 
-
-        # if flag:
-        #     gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)  # Конвертируем в серые тона
-        #     blurred = cv2.GaussianBlur(gray, (5, 5), 0)  # Применяем эффект размытия
-        #     thresh = cv2.threshold(blurred, 135, 255, cv2.THRESH_BINARY)[1]  # Делаем пороговое выделение
-        #     cv2.imshow('thresh', thresh)
-        #
-        # else:
-        #     return 0
-
-        return 0
-
-    def countours1(self, thresh):
         # Поиск контуров в подготовленном изображении
         cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
                                 cv2.CHAIN_APPROX_SIMPLE)
         cnts = cnts[0] if imutils.is_cv2() else cnts[1]
         return cnts
 
-    def countours2(self, thresh):
+    def countours2(self):
+        flag, self.img = self.cap.read()
         # Поиск контуров в подготовленном изображении
         hsv_min = np.array((0, 54, 5), np.uint8)
-        hsv_max = np.array((187, 255, 253), np.uint8)
+        hsv_max = np.array((140, 255, 253), np.uint8)
 
         hsv = cv2.cvtColor(self.img, cv2.COLOR_BGR2HSV)  # меняем цветовую модель с BGR на HSV
-        thresh = cv2.inRange(hsv, hsv_min, hsv_max)  # применяем цветовой фильтр
-        _, contours0, hierarchy = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        return contours0
+        hsv_img = cv2.inRange(hsv, hsv_min, hsv_max)  # применяем цветовой фильтр
+        _, cnts, hierarchy = cv2.findContours(hsv_img.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        return cnts
 
     def detection_process(self, countours):
         # Перебираем все найденные контуры в цикле
@@ -51,9 +42,11 @@ class Detection:
             rect = cv2.minAreaRect(cnt)  # Пытаемся вписать прямоугольник
             box = cv2.boxPoints(rect)  # Поиск четырех вершин прямоугольника
             center = (int(rect[0][0]), int(rect[0][1]))
+            print(center)
             area = int(rect[1][0]*rect[1][1])  # вычисление площади
             # if len(countours) > 100:  # Отсекаем контуры длиной меньше 400 точек
-            if 180000 < area < 500000:
+            # if 0 < area < 50000000:
+            if len(countours) > 100:
                 # вычисление координат двух векторов, являющихся сторонам прямоугольника
                 edge1 = np.int0((box[1][0] - box[0][0], box[1][1] - box[0][1]))
                 edge2 = np.int0((box[2][0] - box[1][0], box[2][1] - box[1][1]))
@@ -82,7 +75,7 @@ class Detection:
 
         cv2.imshow('contours', self.img)
         cv2.waitKey(33)
-        print(center)
+        # print(center)
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
         return center

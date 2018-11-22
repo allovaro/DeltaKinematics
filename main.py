@@ -7,11 +7,11 @@ import math
 svr = Servo()
 sd = Detection()
 ki = Kinematics()
-# frame = sd.countours2(sd.get_next_image())
-#
-# while True:
-#     frame = sd.countours2(sd.get_next_image())
-#     center = sd.detection_process(frame)
+frame = sd.countours1()
+
+while True:
+    frame = sd.countours1()
+    center = sd.detection_process(frame)
 
 svr.connect_servo()
 # svr.read()
@@ -23,7 +23,7 @@ ki.y0 = 0
 ki.z0 = -443
 deg = 1
 r = 100
-print(ki.x0, ki.y0)
+# print(ki.x0, ki.y0)
 
 # Движение по окружности с радиусом r
 while True:

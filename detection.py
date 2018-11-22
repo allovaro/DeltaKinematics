@@ -8,7 +8,7 @@ class Detection:
 
     def __init__(self):
         # self.cap = cv2.VideoCapture(0)
-        self.cap = cv2.VideoCapture('VID_20181122_140714.mp4')
+        self.cap = cv2.VideoCapture('VID_20181122_140853.mp4')
         self.ret, self.img = self.cap.read()
         self.img = cv2.imread('IMG.jpg')
 
@@ -20,8 +20,7 @@ class Detection:
         # cv2.imshow('thresh', thresh)
 
         # Поиск контуров в подготовленном изображении
-        cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
-                                cv2.CHAIN_APPROX_SIMPLE)
+        cnts = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         cnts = cnts[0] if imutils.is_cv2() else cnts[1]
         return cnts
 
@@ -42,11 +41,11 @@ class Detection:
             rect = cv2.minAreaRect(cnt)  # Пытаемся вписать прямоугольник
             box = cv2.boxPoints(rect)  # Поиск четырех вершин прямоугольника
             center = (int(rect[0][0]), int(rect[0][1]))
-            print(center)
+            # print(center)
             area = int(rect[1][0]*rect[1][1])  # вычисление площади
+
             # if len(countours) > 100:  # Отсекаем контуры длиной меньше 400 точек
-            # if 0 < area < 50000000:
-            if len(countours) > 100:
+            if 5000 < area < 50000 and rect[1][0] > 100 and rect[1][1] > 50:
                 # вычисление координат двух векторов, являющихся сторонам прямоугольника
                 edge1 = np.int0((box[1][0] - box[0][0], box[1][1] - box[0][1]))
                 edge2 = np.int0((box[2][0] - box[1][0], box[2][1] - box[1][1]))
@@ -71,7 +70,8 @@ class Detection:
                 cv2.putText(self.img, "%d" % int(angle1), (center[0] + 20, center[1] - 20),
                             cv2.FONT_HERSHEY_SIMPLEX, 1, color_yellow, 1)
                 ctr = np.array(box).reshape((-1, 1, 2)).astype(np.int32)
-                cv2.drawContours(self.img, [ctr], 0, color_yellow)  # рисуем прямоугольник
+                # cv2.drawContours(self.img, [ctr], 0, color_yellow)  # рисуем прямоугольник
+                cv2.drawContours(self.img, [ctr], -1, (0, 255, 0), 2)
 
         cv2.imshow('contours', self.img)
         cv2.waitKey(33)

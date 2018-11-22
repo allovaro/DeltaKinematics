@@ -52,6 +52,7 @@ class Detection:
             box = cv2.boxPoints(rect)  # Поиск четырех вершин прямоугольника
             center = (int(rect[0][0]), int(rect[0][1]))
             area = int(rect[1][0]*rect[1][1])  # вычисление площади
+            # if len(countours) > 100:  # Отсекаем контуры длиной меньше 400 точек
             if 180000 < area < 500000:
                 # вычисление координат двух векторов, являющихся сторонам прямоугольника
                 edge1 = np.int0((box[1][0] - box[0][0], box[1][1] - box[0][1]))
@@ -65,8 +66,8 @@ class Detection:
 
                 # вычисляем угол между самой длинной стороной прямоугольника и горизонтом
                 angle = 180.0 / math.pi * math.acos(
-                     (reference[0] * usedEdge[0] + reference[1] * usedEdge[1]) / (cv2.norm(reference) *
-                                                                                  cv2.norm(usedEdge)))
+                    (reference[0] * usedEdge[0] + reference[1] * usedEdge[1]) / (cv2.norm(reference) *
+                                                                                 cv2.norm(usedEdge)))
                 if angle > 90:
                     angle1 = angle - 180
                 else:
@@ -75,7 +76,7 @@ class Detection:
                 color_yellow = (0, 255, 255)
                 cv2.circle(self.img, center, 5, color_yellow, 1)
                 cv2.putText(self.img, "%d" % int(angle1), (center[0] + 20, center[1] - 20),
-                           cv2.FONT_HERSHEY_SIMPLEX, 1, color_yellow, 1)
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, color_yellow, 1)
                 ctr = np.array(box).reshape((-1, 1, 2)).astype(np.int32)
                 cv2.drawContours(self.img, [ctr], 0, color_yellow)  # рисуем прямоугольник
 

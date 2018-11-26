@@ -9,9 +9,9 @@ sd = Detection()
 ki = Kinematics()
 frame = sd.countours1()
 
-while True:
-    frame = sd.countours1()
-    center = sd.detection_process(frame)
+# while True:
+#     frame = sd.countours1()
+#     center = sd.detection_process(frame)
 
 #svr.connect_servo()
 # svr.read()
@@ -21,8 +21,12 @@ while True:
 ki.x0 = 0
 ki.y0 = 0
 ki.z0 = -443
+ki.theta1 = 1.01125
+ki.theta2 = 1.01125
+ki.theta3 = 1.01125
 print(ki.x0, ki.y0)
-ki.delta_calc_inverse()
+ki.delta_calc_forward()
+# ki.delta_calc_inverse()
 #svr.cmd(ki.theta1, ki.theta2, ki.theta3)
 
 r = 150

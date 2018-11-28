@@ -10,11 +10,14 @@ class Servo:
         self.degMin = 20
         self.degMax = 110
         self.nullPoint = 1400
+        self.theta1_correction = -7
+        self.theta2_correction = -14
+        self.theta3_correction = -10
 
     # Открытие COM1 порта для отправки углов
     def connect_servo(self):
         self.port = serial.Serial(
-            port='COM10',
+            port='COM9',
             baudrate=115200,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,
@@ -23,9 +26,9 @@ class Servo:
         )
 
     def cmd(self, theta1, theta2, theta3):
-        buff = 's1;' + str(math.ceil(self.deg_to_usec(theta1))) + ':' + \
-               's2;' + str(math.ceil(self.deg_to_usec(theta2))) + ':' + \
-               's3;' + str(math.ceil(self.deg_to_usec(theta3)))
+        buff = 's1;' + str(math.ceil(self.deg_to_usec(theta1 - self.theta1_correction))) + ':' + \
+               's2;' + str(math.ceil(self.deg_to_usec(theta2 - self.theta2_correction))) + ':' + \
+               's3;' + str(math.ceil(self.deg_to_usec(theta3 - self.theta3_correction)))
         print(buff)
         self.port.write(buff.encode('ascii'))
         self.deg_to_usec(theta1)

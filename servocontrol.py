@@ -10,9 +10,12 @@ class Servo:
         self.degMin = 20
         self.degMax = 110
         self.nullPoint = 1400
-        self.theta1_correction = -7
-        self.theta2_correction = -14
-        self.theta3_correction = -10
+        # self.theta1_correction = 0
+        # self.theta2_correction = 0
+        # self.theta3_correction = 0
+        self.theta1_correction = -10
+        self.theta2_correction = -16.7
+        self.theta3_correction = -12
 
     # Открытие COM1 порта для отправки углов
     def connect_servo(self):

@@ -6,9 +6,9 @@ class Kinematics:
     def __init__(self):
         # Размеры робота
         self.e = 117.0
-        self.f = 520.0
-        self.re = 550.0
-        self.rf = 206.0
+        self.f = 467.654
+        self.re = 467.0
+        self.rf = 195.385
 
         self.theta = 0
         self.theta1 = 0

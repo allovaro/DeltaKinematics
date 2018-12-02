@@ -5,10 +5,10 @@ class Kinematics:
 
     def __init__(self):
         # Размеры робота
-        self.e = 117.0
-        self.f = 467.654
-        self.re = 467.0
-        self.rf = 195.385
+        self.e = 115.389  # Радиус окружности нижнего треугольника 33.31 в мм
+        self.f = 450.333  # Радиус окружности верхенго треугольника 130 в мм
+        self.re = 550  # Длина предплечья в мм
+        self.rf = 195.385  # Длина бицепса в мм
 
         self.theta = 0
         self.theta1 = 0
@@ -77,8 +77,8 @@ class Kinematics:
         return 0
 
     def delta_calc_angle_yz(self, x0, y0, z0):
-        rf = 206
-        re = 550
+        rf = self.rf
+        re = self.re
         y1 = -(self.f / 2 * self.tan30)  # f / 2 * tg30
         y0 -= self.e / 2 * self.tan30  # сдвигаем центр к краю
         # z = a + b * y
@@ -111,9 +111,9 @@ class Kinematics:
             self.x0_rotated = self.x0*self.cos120 - self.y0*self.sin120
             self.y0_rotated = self.y0*self.cos120+self.x0*self.sin120
             self.theta3 = self.delta_calc_angle_yz(self.x0_rotated, self.y0_rotated, self.z0)
-        print('t1 =', self.theta1)
-        print('t2 =', self.theta2)
-        print('t1 =', self.theta3)
+        # print('t1 =', round(self.theta1, 2), end=' | ')
+        # print('t2 =', round(self.theta2, 2), end=' | ')
+        # print('t1 =', round(self.theta3, 2))
         return 0
 
 

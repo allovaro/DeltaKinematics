@@ -16,7 +16,7 @@ class Servo:
         self.usecMax2 = 2255
         self.degMin2 = 0
         self.degMax2 = 180
-        self.nullPoint2 = 1320
+        self.nullPoint2 = 1250
 
         self.usecMin3 = 192
         self.usecMax3 = 2330
@@ -43,10 +43,10 @@ class Servo:
         )
 
     def cmd(self, theta1, theta2, theta3):
-        buff = 's1;' + str(math.ceil(self.deg_to_usec1(theta1 - self.theta1_correction))) + ':' + \
-               's2;' + str(math.ceil(self.deg_to_usec2(theta2 - self.theta2_correction))) + ':' + \
-               's3;' + str(math.ceil(self.deg_to_usec3(theta3 - self.theta3_correction)))
-        # print(buff)
+        buff = str(math.ceil(self.deg_to_usec1(theta1 - self.theta1_correction))) + ';' + \
+               str(math.ceil(self.deg_to_usec2(theta2 - self.theta2_correction))) + ';' + \
+               str(math.ceil(self.deg_to_usec3(theta3 - self.theta3_correction))) + ';' + '\n'
+        print(buff)
         self.port.write(buff.encode('ascii'))
         # self.deg_to_usec(theta1)
 

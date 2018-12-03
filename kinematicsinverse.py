@@ -116,7 +116,10 @@ class Kinematics:
         # print('t1 =', round(self.theta3, 2))
         return 0
 
-
+    def pick_and_place(self, xy, ):
+        zyz = xy[0]
+        zyz += 1
+        return zyz
 if __name__ == '__main__':
     robot = Kinematics()
     robot.x0 = float(input())

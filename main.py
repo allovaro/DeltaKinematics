@@ -18,9 +18,12 @@ svr.connect_servo()
 # ki.x0 = 250
 # ki.y0 = 250
 # ki.z0 = -450
-ki.x0 = -130
-ki.y0 = 75
+ki.x0 = 0
+ki.y0 = 0
 ki.z0 = -565
+ki.theta1 = 0
+ki.theta2 = 0
+ki.theta3 = 0
 ki.delta_calc_inverse()
 svr.cmd(ki.theta1, ki.theta2, ki.theta3)
 time.sleep(0.5)
@@ -34,7 +37,20 @@ svr.cmd(ki.theta1, ki.theta2, ki.theta3)
 time.sleep(0.5)
 svr.cmd(ki.theta1, ki.theta2, ki.theta3)
 time.sleep(0.5)
-
+my_coordin = [0, 1, 2, 3]
+while True:
+    ki.y0 = 0
+    ki.x0 = 0
+    ki.z0 = -550
+    ki.delta_calc_inverse()
+    svr.cmd(ki.theta1, ki.theta2, ki.theta3)
+    time.sleep(3)
+    ki.y0 = -150
+    ki.x0 = 0
+    ki.z0 = -550
+    ki.delta_calc_inverse()
+    svr.cmd(ki.theta1, ki.theta2, ki.theta3)
+    time.sleep(3)
 r = 100
 deg = 1
 fwdMove = True
@@ -71,12 +87,12 @@ while True:
     if ki.y0 > 0:
         fwdMove = False
         revMove = True
-    if ki.y0 < -100:
+    if ki.y0 < -150:
         fwdMove = True
         revMove = False
     if ki.z0 > -560:
         ki.z0 -= 1
-    print(ki.y0)
+    # print(ki.y0)
     # ki.x0 = -130
     # ki.y0 = 75
     # ki.z0 = -560

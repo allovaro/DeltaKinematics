@@ -8,10 +8,15 @@ svr = Servo()
 sd = Detection()
 ki = Kinematics()
 frame = sd.countours1()
+ki.anchor_frame = [347, 248, 507, 350]
+ki.anchor_real = [-100, -150, 0, -130]
+result = ki.transform(427, 345)
+
+print(result)
 
 # while True:
-#     frame = sd.countours1()
-#     center = sd.detection_process(frame)
+frame = sd.countours1()
+center = sd.detection_process(frame)
 
 svr.connect_servo()
 # svr.read()

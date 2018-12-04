@@ -37,6 +37,8 @@ class Detection:
 
     def detection_process(self, countours):
         # Перебираем все найденные контуры в цикле
+        result = [[]]
+        i = 0
         for cnt in countours:
             rect = cv2.minAreaRect(cnt)  # Пытаемся вписать прямоугольник
             box = cv2.boxPoints(rect)  # Поиск четырех вершин прямоугольника
@@ -45,7 +47,8 @@ class Detection:
             area = int(rect[1][0]*rect[1][1])  # вычисление площади
 
             # if len(countours) > 100:  # Отсекаем контуры длиной меньше 400 точек
-            if 5000 < area < 50000 and rect[1][0] > 100 and rect[1][1] > 50:
+
+            if 5000 < area < 50000 and rect[1][0] > 10 and rect[1][1] > 5:
                 # вычисление координат двух векторов, являющихся сторонам прямоугольника
                 edge1 = np.int0((box[1][0] - box[0][0], box[1][1] - box[0][1]))
                 edge2 = np.int0((box[2][0] - box[1][0], box[2][1] - box[1][1]))
@@ -73,12 +76,20 @@ class Detection:
                 # cv2.drawContours(self.img, [ctr], 0, color_yellow)  # рисуем прямоугольник
                 cv2.drawContours(self.img, [ctr], -1, (0, 255, 0), 2)
 
+                result[i].append(center[0])
+                result[i].append(center[1])
+                result[i].append(angle1)
+                result.append([])
+                i += 1
+
         cv2.imshow('contours', self.img)
+        print(result[7])
         cv2.waitKey(33)
         # print(center)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
-        return center
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+        return result
 
     def shape_detector(self, c):
         # initialize the shape name and approximate the contour

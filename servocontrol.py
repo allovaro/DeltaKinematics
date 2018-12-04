@@ -34,7 +34,7 @@ class Servo:
     # Открытие COM1 порта для отправки углов
     def connect_servo(self):
         self.port = serial.Serial(
-            port='COM9',
+            port='/dev/ttyUSB0',
             baudrate=115200,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,

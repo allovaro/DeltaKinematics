@@ -93,4 +93,3 @@ class Servo:
         print(cc[2:][:-5])
         cc = str(self.port.readline())
         print(cc[2:][:-5])
-

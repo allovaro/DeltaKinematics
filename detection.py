@@ -7,8 +7,8 @@ import math
 class Detection:
 
     def __init__(self):
-        # self.cap = cv2.VideoCapture(1)
-        self.cap = cv2.VideoCapture('VID_20181122_140853.mp4')
+        self.cap = cv2.VideoCapture(1)
+        # self.cap = cv2.VideoCapture('VID_20181122_140853.mp4')
         self.ret, self.img = self.cap.read()
         self.img = cv2.imread('IMG.jpg')
 
@@ -16,7 +16,7 @@ class Detection:
         flag, self.img = self.cap.read()
         gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)  # Конвертируем в серые тона
         blurred = cv2.GaussianBlur(gray, (5, 5), 0)  # Применяем эффект размытия
-        thresh = cv2.threshold(blurred, 105, 255, cv2.THRESH_BINARY)[1]  # Делаем пороговое выделение
+        thresh = cv2.threshold(blurred, 165, 255, cv2.THRESH_BINARY)[1]  # Делаем пороговое выделение
         # cv2.imshow('thresh', thresh)
 
         # Поиск контуров в подготовленном изображении
@@ -48,7 +48,7 @@ class Detection:
 
             # if len(countours) > 100:  # Отсекаем контуры длиной меньше 400 точек
 
-            if 5000 < area < 50000 and rect[1][0] > 10 and rect[1][1] > 5:
+            if 10 < area < 50000 and 150 < rect[1][0] > 50 and 150 < rect[1][1] > 50:
                 # вычисление координат двух векторов, являющихся сторонам прямоугольника
                 edge1 = np.int0((box[1][0] - box[0][0], box[1][1] - box[0][1]))
                 edge2 = np.int0((box[2][0] - box[1][0], box[2][1] - box[1][1]))
@@ -83,11 +83,11 @@ class Detection:
                 i += 1
 
         cv2.imshow('contours', self.img)
-        print(result[7])
+        # print(result[0])
         cv2.waitKey(33)
         # print(center)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
 
         return result
 

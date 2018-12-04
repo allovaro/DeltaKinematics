@@ -16,9 +16,11 @@ class Kinematics:
         self.theta3 = 0
         self.x0 = 0
         self.y0 = 0
-        self.z0 = 0
+        self.z0 = -466.0388
         self.x0_rotated = 0
         self.y0_rotated = 0
+        self.anchor_frame = [56, 381, 56, 417]
+        self.anchor_real = [-140, 140, -315, 0]
 
         self.sin120 = math.sin(math.radians(120))
         self.cos120 = math.cos(math.radians(120))
@@ -116,26 +118,50 @@ class Kinematics:
         # print('t1 =', round(self.theta3, 2))
         return 0
 
-    def pick_and_place(self, xy, ):
-        zyz = xy[0]
-        zyz += 1
+    def pick_and_place(self, xy):
+        z1 = -565
+        x1 = -130
+        z2 = -565
+        x2 = 200
+        z3 = -400
+        x3 = 50
+
+        a = (z3 - ((x3 * (z2 - z1) + x2 * z1 - x1 * z1) / (x2 - x1))) / (x3 * (x3 - x1 - x2) + x1 * x2)
+        b = (z2 - z1) / (x2 - x1) - a * (x1 + x2)
+        c = (x2 * z1 - x1 * z2) / (x2 - x1) + a * x1 * x2
+        self.z0 = a * self.x0 * self.x0 + b * self.x0 + c
         return zyz
-    def transform(self, img_x, img_y, x, y):
-        x1 = img_x - img_y
-        y2 = img_x - img_y
-        result = [x1, y2]
+
+    def transform(self, x_pix, y_pix):
+        frame_coord = self.anchor_frame
+        real_coord = self.anchor_real
+
+        if real_coord[0] - real_coord[2] != 0:
+            temp_x = (x_pix - frame_coord[0]) * (real_coord[1] - real_coord[0]) / \
+                     (frame_coord[1] - frame_coord[0]) + real_coord[0]
+        else:
+            temp_x = 0
+        if real_coord[1] - real_coord[3] != 0:
+            temp_y = (y_pix - frame_coord[2]) * (real_coord[3] - real_coord[2]) / \
+                     (frame_coord[3] - frame_coord[2]) + real_coord[2]
+        else:
+            temp_y = 0
+        result = [temp_x, temp_y]
         return result
 
-if __name__ == '__main__':
-    robot = Kinematics()
-    robot.x0 = float(input())
-    robot.y0 = float(input())
-    robot.z0 = float(input())
+
+
+
+# if __name__ == '__main__':
+#     robot = Kinematics()
+#     robot.x0 = float(input())
+#     robot.y0 = float(input())
+#     robot.z0 = float(input())
 
 
 #    robot.theta1 = float(input())
 #    robot.theta2 = float(input())
 #    robot.theta3 = float(input())
 
-    robot.delta_calc_inverse()
+    # robot.delta_calc_inverse()
 #    robot.delta_calc_forward()

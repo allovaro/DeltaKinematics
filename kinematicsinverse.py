@@ -16,11 +16,11 @@ class Kinematics:
         self.theta3 = 0
         self.x0 = 0
         self.y0 = 0
-        self.z0 = 0
+        self.z0 = -466.0388
         self.x0_rotated = 0
         self.y0_rotated = 0
-        self.anchor_frame = [0, 0, 0, 0]
-        self.anchor_real = [0, 0, 0, 0]
+        self.anchor_frame = [347, 248, 507, 350]
+        self.anchor_real = [-100, -150, 0, -130]
 
         self.sin120 = math.sin(math.radians(120))
         self.cos120 = math.cos(math.radians(120))
@@ -119,8 +119,17 @@ class Kinematics:
         return 0
 
     def pick_and_place(self, xy):
-        zyz = xy[0]
-        zyz += 1
+        z1 = -565
+        x1 = -130
+        z2 = -565
+        x2 = 200
+        z3 = -400
+        x3 = 50
+
+        a = (z3 - ((x3 * (z2 - z1) + x2 * z1 - x1 * z1) / (x2 - x1))) / (x3 * (x3 - x1 - x2) + x1 * x2)
+        b = (z2 - z1) / (x2 - x1) - a * (x1 + x2)
+        c = (x2 * z1 - x1 * z2) / (x2 - x1) + a * x1 * x2
+        self.z0 = a * self.x0 * self.x0 + b * self.x0 + c
         return zyz
 
     def transform(self, x_pix, y_pix):
@@ -136,9 +145,11 @@ class Kinematics:
                  + real_coord[3]
         else:
             temp_y = 0
-
         result = [temp_x, temp_y]
         return result
+
+
+
 
 # if __name__ == '__main__':
 #     robot = Kinematics()

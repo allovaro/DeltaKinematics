@@ -7,7 +7,7 @@ import math
 class Detection:
 
     def __init__(self):
-        # self.cap = cv2.VideoCapture(0)
+        # self.cap = cv2.VideoCapture(1)
         self.cap = cv2.VideoCapture('VID_20181122_140853.mp4')
         self.ret, self.img = self.cap.read()
         self.img = cv2.imread('IMG.jpg')

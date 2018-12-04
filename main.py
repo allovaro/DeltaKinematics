@@ -28,29 +28,63 @@ def trapeze_trj(start, end, svr, ki):
     x2 = end[0]
     y2 = end[1]
 
-    ki.y0 = (ki.x0 - x1) / (x2 - x1) * (y2 - y1) + y1
-    d = math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))
+    # d = math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))
+    # if (x2 - x1) != 0 and (y2 - y1) != 0:
+    #     ki.x0 = x1
+    #     ki.y0 = y1
+    #     ki.delta_calc_inverse()
+    #     svr.cmd(ki.theta1, ki.theta2, ki.theta3, 0)
+    #     time.sleep(1)
+    #     cnt = 5
+    #     diff = (x2 - x1) / cnt
+    #     for i in range(cnt):
+    #         if i == i + 1 or i == cnt - 1:
+    #             ki.z0 = -550
+    #         else:
+    #             ki.z0 = -450
+    #         ki.x0 = ki.x0 + diff
+    #         ki.y0 = (ki.x0 - x1) / (x2 - x1) * (y2 - y1) + y1
+    #         ki.delta_calc_inverse()
+    #         svr.cmd(ki.theta1, ki.theta2, ki.theta3, 0)
+    #         time.sleep(1)
+    #         print(ki.x0, ki.y0, ki.z0)
+    #         print(i)
     if (x2 - x1) != 0:
+        diff = (y2 - y1) / 4
         ki.x0 = x1
         ki.y0 = y1
         ki.delta_calc_inverse()
-        print(ki.x0, ki.y0, ki.z0)
         svr.cmd(ki.theta1, ki.theta2, ki.theta3, 0)
         time.sleep(1)
         cnt = 5
-        diff = (x2 - x1) / cnt
         for i in range(cnt):
             if i == i + 1 or i == cnt - 1:
                 ki.z0 = -550
             else:
                 ki.z0 = -450
-            ki.x0 = ki.x0 + diff
-            ki.y0 = ki.y0 = (ki.x0 - x1) / (x2 - x1) * (y2 - y1) + y1
+            ki.y0 += diff
             ki.delta_calc_inverse()
             svr.cmd(ki.theta1, ki.theta2, ki.theta3, 0)
             time.sleep(1)
-            print(ki.x0, ki.y0, ki.z0)
-            print(i)
+    if (y2 - y1) != 0:
+        diff = (x2 - x1) / 4
+        ki.x0 = x1
+        ki.y0 = y1
+        ki.delta_calc_inverse()
+        svr.cmd(ki.theta1, ki.theta2, ki.theta3, 0)
+        time.sleep(1)
+        cnt = 5
+        for i in range(cnt):
+            if i == i + 1 or i == cnt - 1:
+                ki.z0 = -550
+            else:
+                ki.z0 = -450
+            ki.x0 += diff
+            ki.delta_calc_inverse()
+            svr.cmd(ki.theta1, ki.theta2, ki.theta3, 0)
+            time.sleep(1)
+
+
     return start
 
 
@@ -61,12 +95,9 @@ svr.connect_servo()
 
 r = 160
 deg = 1
-ki.x0 = 0
-ki.y0 = 100
-ki.z0 = -410
 while True:
-    frame = sd.countours1()
-    center = sd.detection_process(frame)
+    # frame = sd.countours1()
+    # center = sd.detection_process(frame)
     # ki.x0 = r * math.sin(math.radians(deg))
     # # ki.y0 = ki.x0
     # ki.y0 = r * math.sin(math.radians(90 - deg))
@@ -77,15 +108,17 @@ while True:
     # deg += 0.5
     # time.sleep(0.01)
     # svr.cmd(ki.theta1, ki.theta2, ki.theta3, 0)
+    start = [0, 0]
+    end = [0, -150]
+    # trapeze_trj(start, end, svr, ki)
+    ki.delta_calc_inverse()
+    svr.cmd(ki.theta1, ki.theta2, ki.theta3, 0)
+    # if len(center) != 1:
+    #     x_new = center[0][0]
+    #     y_new = center[0][1]
+    #     result = ki.transform(x_new, y_new)
+    #     print(round(result[0], 2), round(result[1], 2))
 
-    if len(center) != 1:
-        x_new = center[0][0]
-        y_new = center[0][1]
-        result = ki.transform(x_new, y_new)
-        print(round(result[0], 2), round(result[1], 2))
-        start = [0, 0]
-        end = [x_new, y_new]
-        trapeze_trj(start, end, svr, ki)
 
 
 

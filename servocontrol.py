@@ -46,7 +46,7 @@ class Servo:
         buff = str(math.ceil(self.deg_to_usec1(theta1 - self.theta1_correction))) + ';' + \
                str(math.ceil(self.deg_to_usec2(theta2 - self.theta2_correction))) + ';' + \
                str(math.ceil(self.deg_to_usec3(theta3 - self.theta3_correction))) + ';' + str(relay) + ';' + '\n'
-        print(buff)
+        # print(buff)
         self.port.write(buff.encode('ascii'))
         # self.deg_to_usec(theta1)
 

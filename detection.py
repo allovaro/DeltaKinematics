@@ -16,8 +16,8 @@ class Detection:
         flag, self.img = self.cap.read()
         gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)  # Конвертируем в серые тона
         blurred = cv2.GaussianBlur(gray, (5, 5), 0)  # Применяем эффект размытия
-        thresh = cv2.threshold(blurred, 165, 255, cv2.THRESH_BINARY)[1]  # Делаем пороговое выделение
-        # cv2.imshow('thresh', thresh)
+        thresh = cv2.threshold(blurred, 175, 255, cv2.THRESH_BINARY)[1]  # Делаем пороговое выделение
+        cv2.imshow('thresh', thresh)
 
         # Поиск контуров в подготовленном изображении
         cnts = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -43,16 +43,15 @@ class Detection:
             rect = cv2.minAreaRect(cnt)  # Пытаемся вписать прямоугольник
             box = cv2.boxPoints(rect)  # Поиск четырех вершин прямоугольника
             center = (int(rect[0][0]), int(rect[0][1]))
-            # print(center)
+
             area = int(rect[1][0]*rect[1][1])  # вычисление площади
 
-            # if len(countours) > 100:  # Отсекаем контуры длиной меньше 400 точек
 
-            if 10 < area < 50000 and 150 < rect[1][0] > 50 and 150 < rect[1][1] > 50:
+            if 10 < area < 50000 and 102 > rect[1][0] > 50 and 102 > rect[1][1] > 50:
                 # вычисление координат двух векторов, являющихся сторонам прямоугольника
                 edge1 = np.int0((box[1][0] - box[0][0], box[1][1] - box[0][1]))
                 edge2 = np.int0((box[2][0] - box[1][0], box[2][1] - box[1][1]))
-                # print(center)
+
                 # выясняем какой вектор больше
                 usedEdge = edge1
                 if cv2.norm(edge2) > cv2.norm(edge1):
@@ -67,13 +66,12 @@ class Detection:
                     angle1 = angle - 180
                 else:
                     angle1 = angle
-                # print(angle1)
+
                 color_yellow = (0, 255, 255)
                 cv2.circle(self.img, center, 5, color_yellow, 1)
                 cv2.putText(self.img, "%d" % int(angle1), (center[0] + 20, center[1] - 20),
                             cv2.FONT_HERSHEY_SIMPLEX, 1, color_yellow, 1)
                 ctr = np.array(box).reshape((-1, 1, 2)).astype(np.int32)
-                # cv2.drawContours(self.img, [ctr], 0, color_yellow)  # рисуем прямоугольник
                 cv2.drawContours(self.img, [ctr], -1, (0, 255, 0), 2)
 
                 result[i].append(center[0])

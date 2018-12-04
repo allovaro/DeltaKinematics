@@ -35,7 +35,7 @@ def trapeze_trj(start, end, svr, ki):
         ki.y0 = y1
         ki.delta_calc_inverse()
         print(ki.x0, ki.y0, ki.z0)
-        svr.cmd(ki.theta1, ki.theta2, ki.theta3)
+        svr.cmd(ki.theta1, ki.theta2, ki.theta3, 0)
         time.sleep(1)
         cnt = 5
         diff = (x2 - x1) / cnt
@@ -47,7 +47,7 @@ def trapeze_trj(start, end, svr, ki):
             ki.x0 = ki.x0 + diff
             ki.y0 = ki.y0 = (ki.x0 - x1) / (x2 - x1) * (y2 - y1) + y1
             ki.delta_calc_inverse()
-            svr.cmd(ki.theta1, ki.theta2, ki.theta3)
+            svr.cmd(ki.theta1, ki.theta2, ki.theta3, 0)
             time.sleep(1)
             print(ki.x0, ki.y0, ki.z0)
             print(i)
@@ -57,25 +57,39 @@ def trapeze_trj(start, end, svr, ki):
 svr = Servo()
 sd = Detection()
 ki = Kinematics()
+svr.connect_servo()
 
-result = ki.transform(427, 345)
-
-
+r = 160
+deg = 1
+ki.x0 = 0
+ki.y0 = 100
+ki.z0 = -410
 while True:
     frame = sd.countours1()
     center = sd.detection_process(frame)
-    if not center:
-        x_new = center[0][0]
-    else:
-        x_new =100
-    if not center:
-        y_new = center[0][1]
-    else:
-        y_new = 100
-    result = ki.transform(x_new, y_new)
-    print(round(result[0], 2), round(result[1], 2))
+    # ki.x0 = r * math.sin(math.radians(deg))
+    # # ki.y0 = ki.x0
+    # ki.y0 = r * math.sin(math.radians(90 - deg))
+    # ki.z0 = 500
+    # ki.delta_calc_inverse()
+    # svr.cmd(ki.theta1, ki.theta2, ki.theta3, 0)
+    # print(deg, ki.z0, ki.x0)
+    # deg += 0.5
+    # time.sleep(0.01)
+    # svr.cmd(ki.theta1, ki.theta2, ki.theta3, 0)
 
-svr.connect_servo()
+    if len(center) != 1:
+        x_new = center[0][0]
+        y_new = center[0][1]
+        result = ki.transform(x_new, y_new)
+        print(round(result[0], 2), round(result[1], 2))
+        start = [0, 0]
+        end = [x_new, y_new]
+        trapeze_trj(start, end, svr, ki)
+
+
+
+
 start = [0, 0]
 end = [1, -150]
 # trapeze_trj(start, end, svr, ki)

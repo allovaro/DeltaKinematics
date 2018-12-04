@@ -34,7 +34,7 @@ class Servo:
     # Открытие COM1 порта для отправки углов
     def connect_servo(self):
         self.port = serial.Serial(
-            port='COM1',
+            port='COM9',
             baudrate=115200,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,
@@ -42,10 +42,10 @@ class Servo:
             timeout=1
         )
 
-    def cmd(self, theta1, theta2, theta3):
+    def cmd(self, theta1, theta2, theta3, relay):
         buff = str(math.ceil(self.deg_to_usec1(theta1 - self.theta1_correction))) + ';' + \
                str(math.ceil(self.deg_to_usec2(theta2 - self.theta2_correction))) + ';' + \
-               str(math.ceil(self.deg_to_usec3(theta3 - self.theta3_correction))) + ';' + '\n'
+               str(math.ceil(self.deg_to_usec3(theta3 - self.theta3_correction))) + ';' + str(relay) + ';' + '\n'
         print(buff)
         self.port.write(buff.encode('ascii'))
         # self.deg_to_usec(theta1)

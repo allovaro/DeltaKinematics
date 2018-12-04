@@ -8,8 +8,10 @@ import math
 def pick_and_place(x0):
     z1 = -565
     x1 = -130
+
     z2 = -565
     x2 = 200
+
     z3 = -400
     x3 = 50
 
@@ -28,8 +30,27 @@ def trapeze_trj(start, end, svr, ki):
 
     ki.y0 = (ki.x0 - x1) / (x2 - x1) * (y2 - y1) + y1
     d = math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))
-    ki.delta_calc_inverse()
-    svr.cmd(ki.theta1, ki.theta2, ki.theta3)
+    if (x2 - x1) != 0:
+        ki.x0 = x1
+        ki.y0 = y1
+        ki.delta_calc_inverse()
+        print(ki.x0, ki.y0, ki.z0)
+        svr.cmd(ki.theta1, ki.theta2, ki.theta3)
+        time.sleep(1)
+        cnt = 5
+        diff = (x2 - x1) / cnt
+        for i in range(cnt):
+            if i == i + 1 or i == cnt - 1:
+                ki.z0 = -550
+            else:
+                ki.z0 = -450
+            ki.x0 = ki.x0 + diff
+            ki.y0 = ki.y0 = (ki.x0 - x1) / (x2 - x1) * (y2 - y1) + y1
+            ki.delta_calc_inverse()
+            svr.cmd(ki.theta1, ki.theta2, ki.theta3)
+            time.sleep(1)
+            print(ki.x0, ki.y0, ki.z0)
+            print(i)
     return start
 
 
@@ -46,7 +67,22 @@ print(result)
 #     center = sd.detection_process(frame)
 
 svr.connect_servo()
-trapeze_trj(5, 6, svr)
+start = [0, 0]
+end = [1, -150]
+# trapeze_trj(start, end, svr, ki)
+r = 160
+deg = 1
+while True:
+    ki.x0 = r * math.sin(math.radians(deg))
+    #ki.y0 = ki.x0
+    ki.y0 = r * math.sin(math.radians(90 - deg))
+    ki.z0 = 500
+    ki.delta_calc_inverse()
+    svr.cmd(ki.theta1, ki.theta2, ki.theta3, 0)
+    print(deg, ki.z0, ki.x0)
+    deg += 0.5
+    time.sleep(0.01)
+
 
 ki.delta_calc_inverse()
 svr.cmd(ki.theta1, ki.theta2, ki.theta3)

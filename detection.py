@@ -7,7 +7,7 @@ import math
 class Detection:
 
     def __init__(self):
-        self.cap = cv2.VideoCapture(1)
+        self.cap = cv2.VideoCapture(0)
         # self.cap = cv2.VideoCapture('VID_20181122_140853.mp4')
         self.ret, self.img = self.cap.read()
         self.img = cv2.imread('IMG.jpg')
@@ -47,7 +47,7 @@ class Detection:
             area = int(rect[1][0]*rect[1][1])  # вычисление площади
 
 
-            if 10 < area < 50000 and 102 > rect[1][0] > 50 and 102 > rect[1][1] > 50:
+            if 4000 < area < 4950 and 102 > rect[1][0] > 50 and 102 > rect[1][1] > 50:
                 # вычисление координат двух векторов, являющихся сторонам прямоугольника
                 edge1 = np.int0((box[1][0] - box[0][0], box[1][1] - box[0][1]))
                 edge2 = np.int0((box[2][0] - box[1][0], box[2][1] - box[1][1]))
